@@ -5,33 +5,25 @@ const port = 4000
 
 const { graphqlHTTP } = require('express-graphql')
 const { buildSchema } = require('graphql')
+const movieSchema = require('./schema/schema')
+const resolvers = require('./resolver/resolver')
 
 const mongoose = require('mongoose')
+require('dotenv').config();
+const DBUrl = process.env.DB_CONNECT
 //Connection to the database
-mongoose.connect('mongodb+srv://elissafirstborn:asdFGHJkloiuytreed@cluster0.dzq3tep.mongodb.net/?retryWrites=true&w=majority', {
+mongoose.connect(DBUrl, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
 })
 .then(()=> console.log('MongoDb Connected😱'))
 .catch((e)=> console.log('error', e))
 
-const schema = buildSchema(`
-  type Query {
-    name: String
-  }
-`)
-
-const rootValue = {
-    name: () => {
-        return 'John Wick Parabellum'
-    }
-}
-
 //Setting  GraphQL Connection
 app.use('/graphql', graphqlHTTP({
-    schema,
-    graphiql: true,
-    rootValue
+    schema: movieSchema,
+    graphiql: true, 
+    rootValue: resolvers
 }))
 
 app.get('/', (req, res)=>{
